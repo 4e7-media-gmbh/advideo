@@ -66,13 +66,15 @@
     integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
   <script src='https://notorious-mag.com/sites/all/libraries/vjs/video.js'></script>
   <script src="//imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
-  <script src="/vpaid.js"></script>
+  <script src="/vastclient.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-contrib-ads/6.6.4/videojs-contrib-ads.js"
     integrity="sha256-Vy2TyzNwiCLcPZwFweJ3MaIatSpvJpZkqSffp6dRLeo=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-contrib-ads/6.6.4/videojs.ads.js"
     integrity="sha256-Vy2TyzNwiCLcPZwFweJ3MaIatSpvJpZkqSffp6dRLeo=" crossorigin="anonymous"></script>
-  <script src="../dist/videojs.ima.js"></script>
-  <script src="player.js"></script>
+  <script src="videojs.ima.js"></script>
+  <script src="https://notorious-mag.com/sites/all/libraries/vjs/videojs_5.vast.vpaid.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vast-player@0.2/dist/vast-player.min.js"></script>
+  <!--script src="https://notorious-mag.com/sites/all/libraries/vjs/videojs_5.vast.vpaid.min.js"></script-->
   <!--script src="/rollads.js"></script-->
   <!--script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-playLists/0.2.0/videojs-playlists.min.js" integrity="sha256-NKUlYyblJbPhZvgROcDiBE+0VumNzulTrF83HnPLFm8=" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/fw-videojs-playlist@4.0.4/dist/videojs-playlist.cjs.min.js"></script>
@@ -83,94 +85,130 @@
     var adc = ""
     var midplayed = false
     var time = ""
+    var postrollplayed = false
+    /*requestAds = function () {
+
+        // reset plugin state
+        state = {};
+
+        // fetch ad inventory
+        // the 'src' parameter is ignored by the example inventory.json flat file,
+        // but this shows how you might send player information along to the ad server.
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "https://ad1.adfarm1.adition.com/banner?sid=3123832&ts=3322113&wpt=X&prf[consent]=optin", true);
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === 4) {
+            try {
+              state.inventory = JSON.parse(xhr.responseText);
+              player.trigger('adsready');
+            } catch (err) {
+              throw new Error('Couldn\'t parse inventory response as JSON');
+            }
+          }
+        };
+        xhr.send(null);
+
+      },*/
 
     function getad() {
 
       var myrnd = Math.floor(Math.random() * 10000000)
-      fetch("https://ad1.adfarm1.adition.com/banner?sid=3123832&ts=" + myrnd + "&wpt=X&prf[consent]=optin")
-        .then(function (resp) {
-          return resp.text();
-        })
-        .then(function (data) {
-          let praser = new DOMParser(),
-            xmlDoc = praser.parseFromString(data, 'text/xml');
-          adTagz = xmlDoc.getElementsByTagName("MediaFile")
-          advideo = adTagz.item(0).innerHTML.replace("<![CDATA[", "").replace("]]>", "");
-          adclick = xmlDoc.getElementsByTagName("ClickThrough");
-          click = adclick.item(0).innerHTML.replace("<![CDATA[", "").replace("]]>", "")
-          adv = advideo
-        })
-    }
+
+    };
+    /*fetch("https://ad1.adfarm1.adition.com/banner?sid=3123832&ts=" + myrnd + "&wpt=X&prf[consent]=optin")
+      .then(function (resp) {
+        return resp.text();
+      })
+      .then(function (data) {
+        let praser = new DOMParser(),
+          xmlDoc = praser.parseFromString(data, 'text/xml');
+        adTagz = xmlDoc.getElementsByTagName("MediaFile")
+        advideo = adTagz.item(0).innerHTML.replace("<![CDATA[", "").replace("]]>", "");
+        adclick = xmlDoc.getElementsByTagName("ClickThrough");
+        click = adclick.item(0).innerHTML.replace("<![CDATA[", "").replace("]]>", "")
+        adv = advideo
+      })*/
 
 
-    var player = videojs('myvideo', {
+
+    var playerA = videojs('myvideo', {
       muted: true,
       controls: true,
       autoplay: true,
     });
+    /*var vastplugin = playerA.vastClient({
+      adTagUrl: "https://ad1.adfarm1.adition.com/banner?sid=3123832&ts=3322113&wpt=X&prf[consent]=optin",
+      playAdAlways: false,
+      adsenabled: false,
+    })*/
+    var playerB= new window.VASTPlayer(document.getElementById('myvideo'));
 
-    var options = {
-      id: 'myvideo',
-    };
-
-    function midtimer() {
-
-
-      if (midplayed == false) {
-        getad()
-        midplayed = true
-        var int = setInterval(function () {
-          half = player.duration() / 2
-          current = player.currentTime()
-          console.log(player.currentTime())
-          if (current >= half) {
-            clearInterval(int);
-            midplay = true
-            player.ads.startLinearAdMode();
-            player.src(adv);
-
-          }
-        }, 1000)
-      }
-    }
-    player.ads()
+    playerB.load('https://ad1.adfarm1.adition.com/banner?sid=3123832&ts=3322113&wpt=X&prf[consent]=optin');
+    playerA.ads()
     // request ads whenever there's new video content
-    player.on('contentchanged', function () {
+    playerA.on('contentchanged', function () {
       // in a real plugin, you might fetch new ad inventory here
-      player.trigger('adsready');
+      playerA.trigger('adsready');
     });
 
-    player.one('readyforpreroll', function () {
-      player.ads.startLinearAdMode();
+    playerA.one('readyforpreroll', function () {
+      playerA.ads.startLinearAdMode();
       // play your linear ad content
       // in this example, we use a static mp4
-      getad()
-      setTimeout(function () {
-        src = adv
+      //getad()
+      playerB.startAd()
+
+
+      /*setTimeout(function () {
+        console.log(adobj);
         console.log(adv)
-        player.src(src);
-      }, 500);
+        playerA.src(vastplugin.adTagUrl);
+      }, 500);*/
 
 
       // send event when ad is playing to remove loading spinner
-      player.on('adplaying', function () {
-        player.trigger('ads-ad-started');
+      playerA.on('adplaying', function () {
+        playerA.trigger('ads-ad-started');
       });
 
       // resume content when all your linear ads have finished
-      player.on('adended', function () {
-        player.ads.endLinearAdMode();
+      playerA.on('adended', function () {
+        playerA.ads.endLinearAdMode();
         console.log("nice")
-        time = player.duration() / 2 * 10000;
-        midtimer()
+        if (postrollplayed == true) {
+
+        }
       });
 
     });
-    player.one("readyforpostroll ", function(){
-      player.ads.startLinearAdMode();
+    playerA.on('timeupdate', function () {
+      half = playerA.duration() / 2
+      current = playerA.currentTime()
+      if (current >= half && midplayed == false) {
+        midplayed = true
+        playerA.ads.startLinearAdMode();
+        playerA.src(vastplugin.adTagUrl);
+
+      }
+    })
+    playerA.one("readyforpostroll", function () {
+      postrollplayed = true
+      playerA.ads.startLinearAdMode();
+      playerA.src(adTagUrl);
     })
     // in a real plugin, you might fetch ad inventory here
-    player.trigger('adsready');
+    playerA.trigger('adsready');
+    $("#myvideo").on("load", function () {
+      playerA.play()
+      console.log("mhh1")
+    })
+    /*$(document).ready(function () {
+      
+      console.log("mhh")
+      setTimeout(() => {
+        playerA.play()
+      }, 300);
+    })*/
   </script>
 </body>
 
