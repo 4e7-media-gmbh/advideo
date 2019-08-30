@@ -66,7 +66,7 @@
     integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
   <script src='https://notorious-mag.com/sites/all/libraries/vjs/video.js'></script>
   <script src="//imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
-  <script src="/vastclient.js"></script>
+  <script src="vastclient.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-contrib-ads/6.6.4/videojs-contrib-ads.js"
     integrity="sha256-Vy2TyzNwiCLcPZwFweJ3MaIatSpvJpZkqSffp6dRLeo=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-contrib-ads/6.6.4/videojs.ads.js"
@@ -74,45 +74,50 @@
   <script src="videojs.ima.js"></script>
 
   <script src="https://cdn.jsdelivr.net/npm/vast-player@0.2/dist/vast-player.min.js"></script>
-  <!--script src="https://notorious-mag.com/sites/all/libraries/vjs/videojs_5.vast.vpaid.min.js"></script-->
+  <script src="videojs_5.vast.vpaid.min.js"></script>
   <!--script src="/rollads.js"></script-->
   <!--script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-playLists/0.2.0/videojs-playlists.min.js" integrity="sha256-NKUlYyblJbPhZvgROcDiBE+0VumNzulTrF83HnPLFm8=" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/fw-videojs-playlist@4.0.4/dist/videojs-playlist.cjs.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-playLists/0.2.0/videojs-playlists.min.js" integrity="sha256-NKUlYyblJbPhZvgROcDiBE+0VumNzulTrF83HnPLFm8=" crossorigin="anonymous"></script-->
   <!--script src="https://rawgit.com/atlance01/vrapp-ionic/master/www/js/lib/videojs-playlist.js"></script-->
-  <script type="module">
-    import { VASTClient } from 'vast-client.js'
 
-    const vastClient = new VASTClient();
-    
-    vastClient.get('https://www.examplevast.com/vast.xml')
-      .then(res => {
-        var url = res
-        console.log(url);
-        
-      })
-      .catch(err => {
-        // Deal with the error
-      });
-  </script>
   <script>
     var adv = ""
     var adc = ""
     var midplayed = false
     var time = ""
     var postrollplayed = false
-    
+    //var vastClient = new VAST.VASTClient();
+    /*vastClient.get('https://5eml9wq.las4srv.com/vast?cbzid=1370962&cbpid=1370811')
+      .then(res => {
+        vast = resconsole.log(vast)
+      })
+      .catch(err => {
+        console.log("cant")
+      });
+    const vastParser = new VAST.VASTParser();
+
+    vastParser.parseVAST('https://5eml9wq.las4srv.com/vast?cbzid=1370962&cbpid=1370811')
+      .then(res => {
+        console.log(res)
+      })
+      .catch(err => {
+        console.log(err)
+      });*/
+
     var playerA = videojs('myvideo', {
       muted: true,
       controls: true,
       autoplay: true,
     });
-    /*var vastplugin = playerA.vastClient({
-      adTagUrl: "https://ad1.adfarm1.adition.com/banner?sid=3123832&ts=3322113&wpt=X&prf[consent]=optin",
-      playAdAlways: false,
-      adsenabled: false,
-    })*/
-    playerA.ads()
+    var vastplugin = playerA.vastClient({
+      adTagUrl: "https://5eml9wq.las4srv.com/vast?cbzid=1370962&cbpid=1370811",
+      playAdAlways: true,
+      adsenabled: true,
+      adCancelTimeout: 5000,
+    })
+
+    /*playerA.ads()
     // request ads whenever there's new video content
     playerA.on('contentchanged', function () {
       // in a real plugin, you might fetch new ad inventory here
@@ -124,13 +129,13 @@
       // play your linear ad content
       // in this example, we use a static mp4
       //getad()
-
+      playerA.trigger('playing');
 
       /*setTimeout(function () {
         console.log(adobj);
         console.log(adv)
         playerA.src(vastplugin.adTagUrl);
-      }, 500);*/
+      }, 500);
 
 
       // send event when ad is playing to remove loading spinner
@@ -154,7 +159,7 @@
       if (current >= half && midplayed == false) {
         midplayed = true
         playerA.ads.startLinearAdMode();
-        playerA.src(vastplugin.adTagUrl);
+        player.trigger('vast.adStart')
 
       }
     })
@@ -168,7 +173,7 @@
     $("#myvideo").on("load", function () {
       playerA.play()
       console.log("mhh1")
-    })
+    })*/
     /*$(document).ready(function () {
       
       console.log("mhh")
@@ -177,7 +182,7 @@
       }, 300);
     })*/
   </script>
-  
+
 </body>
 
 </html>
